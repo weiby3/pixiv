@@ -54,9 +54,34 @@ func (r SearchResult) Novels() []Novel {
 
 }
 
+type Order string
+
+const (
+	OrderDateNull       Order = ""
+	OrderDateAscending  Order = "date"
+	OrderDateDescending Order = "date_d"
+)
+
+type Lang string
+
+const (
+	LangNull Lang = ""
+	LangZH   Lang = "zh"
+)
+
+type WorkLang string
+
+const (
+	WorkLangNull WorkLang = ""
+	WorkLangZHCN WorkLang = "zh-cn"
+)
+
 // SearchOptions for Search
 type SearchOptions struct {
-	Page int
+	Page     int
+	Order    Order
+	Lang     Lang
+	WorkLang WorkLang
 }
 
 // SearchOption mutate SearchOptions
@@ -66,6 +91,24 @@ type SearchOption func(*SearchOptions)
 func SearchOptionPage(page int) SearchOption {
 	return func(so *SearchOptions) {
 		so.Page = page
+	}
+}
+
+func SearchOptionOrder(order Order) SearchOption {
+	return func(so *SearchOptions) {
+		so.Order = order
+	}
+}
+
+func SearchOptionLang(lang Lang) SearchOption {
+	return func(so *SearchOptions) {
+		so.Lang = lang
+	}
+}
+
+func SearchOptionWorkLang(workLang WorkLang) SearchOption {
+	return func(so *SearchOptions) {
+		so.WorkLang = workLang
 	}
 }
 
@@ -82,6 +125,15 @@ func Search(ctx context.Context, query string, opts ...SearchOption) (result Sea
 	q := url.Values{}
 	if args.Page != 1 {
 		q.Set("p", strconv.Itoa(args.Page))
+	}
+	if args.Order != OrderDateNull {
+		q.Set("order", string(args.Order))
+	}
+	if args.Lang != LangNull {
+		q.Set("lang", string(args.Lang))
+	}
+	if args.WorkLang != WorkLangNull {
+		q.Set("work_lang", string(args.WorkLang))
 	}
 
 	var c = client.For(ctx)

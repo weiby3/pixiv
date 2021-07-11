@@ -3,6 +3,7 @@ package novel
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/url"
 	"time"
 
@@ -65,6 +66,7 @@ func (i *Novel) Fetch(ctx context.Context) (err error) {
 	if err != nil {
 		return
 	}
+	fmt.Println(data)
 	i.Title = data.Get("title").String()
 	i.Description = data.Get("description").String()
 	i.CoverURL = data.Get("coverUrl").String()
